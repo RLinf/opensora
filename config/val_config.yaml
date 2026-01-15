@@ -1,0 +1,61 @@
+# Dataset settings
+base_hf_dir: "/mnt/mnt/public/jzn/workspace/WMPO"
+
+stats_path: "${base_hf_dir}/data_files/statistics/rlinf_libero_dataset_1114_split/dataset_statistics.json"
+
+grad_checkpoint: false
+
+# Acceleration settings
+num_workers: 4  # 4
+# num_bucket_build_workers: 16
+dtype: bf16
+plugin: zero2
+
+# Model settings
+model:
+  type: "STDiT3-XL/2"
+  from_pretrained: "${base_hf_dir}/checkpoint_files/runs/world_models/rlinf_libero_dataset_1114_split/002-STDiT3-XL-2/epoch0-global_step1265000/ema.pt"
+  qk_norm: true
+  enable_flash_attn: true
+  enable_layernorm_kernel: true
+  action_dim: 7
+  pad_action_num: 4
+
+vae:
+  type: SDXL
+  from_pretrained: "${base_hf_dir}/checkpoint_files/world_models/vae"
+  micro_frame_size: 8
+  micro_batch_size: 64
+
+scheduler:
+  type: rflow
+  use_timestep_transform: true
+  sample_method: logit-normal
+
+batch_size: 1
+
+# Log settings
+seed: 42
+outputs: "runs/world_models_opensora/"
+wandb: true
+log_every: 10
+ckpt_every: 5000
+
+grad_clip: 1.0
+lr: 1.0e-4
+ema_decay: 0.99
+adam_eps: 1.0e-15
+warmup_steps: 1000
+
+fps: 3
+multi_resolution: STDiT2
+cache_pin_memory: false
+
+epoch_num: 1310000
+val_data_processed_dir: "${base_dir}/data_files/val_data/rlinf_libero/val_data_processed"
+output_dir: "./generate_opensora"
+use_delta_actions: true
+process_all: false
+condition_frame_length: 4
+image_size: [256, 256]
+num_frames: 12
